@@ -1,11 +1,27 @@
 extends Node
 
+var cards: Array[Dictionary] = []
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	print("Loading cards.json...")
 
+	var json_text := FileAccess.get_file_as_string("res://data/cards.json")
+	var parsed = JSON.parse_string(json_text)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+	if typeof(parsed) == TYPE_DICTIONARY and parsed.has("cards"):
+		cards.clear()
+		for c in parsed["cards"]:
+			if typeof(c) == TYPE_DICTIONARY:
+				cards.append(c)
+
+	print("Loaded %d cards" % cards.size())
+	if cards.size() > 0:
+		print("First card:", cards[0].get("name", ""))
+
+func get_all_cards() -> Array[Dictionary]:
+	return cards
+
+func get_random_card() -> Dictionary:
+	if cards.is_empty():
+		return {}
+	return cards.pick_random()
